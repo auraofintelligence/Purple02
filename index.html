@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P4A Design Architecture & Page Tree</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&family=Teko:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deep-canvas': '#16082B',
+                        'synthesis-neon': '#B533FF',
+                        'solarpunk-green': '#10B981',
+                        'amethyst-light': '#D8B4FE',
+                        'slate-dark': '#1E1B4B'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'heading': ['Teko', 'sans-serif'],
+                        'tech': ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #16082B;
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .glow-border {
+            border: 1px solid #B533FF;
+            box-shadow: 0 0 10px rgba(181, 51, 255, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+        .glow-border:hover {
+            box-shadow: 0 0 20px rgba(181, 51, 255, 0.5);
+        }
+        .crystalline-bg {
+            background: linear-gradient(135deg, rgba(22,8,43,0.9) 0%, rgba(30,27,75,0.9) 100%);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-synthesis-neon selection:text-white">
+
+<!-- Chosen Palette: Deep Canvas (#16082B) background, Synthesis Neon (#B533FF) accents, Solarpunk Green (#10B981) secondary accents, Amethyst Light (#D8B4FE) text highlights. -->
+<!-- Application Structure Plan: A tabbed dashboard designed specifically for a design and development team. It breaks down complex political and technical policy into actionable design systems. The structure moves logically from Brand Identity (the look), to Phasing Strategy (the timeline context), to the Page Tree (the architecture), and finally to UI Modules (the building blocks). This allows the team to understand the 'why' before building the 'what', avoiding linear document reading in favour of an explorable reference tool. -->
+<!-- Visualization & Content Choices: 
+1. Surge Activity Chart -> Goal: Inform/Change -> Method: Chart.js Bar Chart -> Justification: Clearly visualises the rhythm of major and minor civic surges throughout the year, helping designers understand traffic peaks and feature toggles.
+2. Demographic Focus -> Goal: Inform -> Method: Chart.js Doughnut Chart -> Justification: Breaks down the target audience segments for tailored content modules.
+3. Interactive Timeline -> Goal: Organize/Change -> Method: HTML/CSS Interactive Grid -> Justification: Replaces static text with a clickable roadmap showing the evolution from early trials to deep space stretch goals, ensuring the design team understands the phased rollout (e.g., ISS de-orbit in 2030).
+4. Page Tree Hierarchy -> Goal: Organize -> Method: HTML/CSS Nested Flexbox -> Justification: A clean, visual representation of the site structure, avoiding complex diagramming tools or SVG while remaining perfectly responsive.
+CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <header class="mb-12 text-center border-b border-synthesis-neon/30 pb-8">
+        <h1 class="font-heading text-5xl md:text-7xl text-white tracking-wide mb-2 uppercase">
+            <span class="text-synthesis-neon">P4A</span> Web Architecture
+        </h1>
+        <p class="font-tech text-xl text-amethyst-light tracking-widest uppercase mb-4">Less Splash, More Class ✦ Joyful. Responsible. Abundance.</p>
+        <p class="max-w-3xl mx-auto text-gray-400 font-sans text-lg">
+            A comprehensive design and content breakdown for the People's Purple Protopian Party of Australia. This interactive brief outlines the aesthetic, structural, and temporal requirements for our digital interface, designed to inspire intelligent participation in AI-enhanced Civic Surges.
+        </p>
+    </header>
+
+    <nav class="flex flex-wrap justify-center gap-4 mb-12" id="main-nav">
+        <button onclick="switchTab('brand-tab')" class="tab-btn px-6 py-3 font-tech text-lg uppercase tracking-wider glow-border rounded bg-synthesis-neon/20 text-white" data-target="brand-tab">1. Brand & Aesthetic</button>
+        <button onclick="switchTab('timeline-tab')" class="tab-btn px-6 py-3 font-tech text-lg uppercase tracking-wider border border-gray-600 rounded hover:border-synthesis-neon text-gray-300 transition-colors" data-target="timeline-tab">2. Phasing Strategy</button>
+        <button onclick="switchTab('architecture-tab')" class="tab-btn px-6 py-3 font-tech text-lg uppercase tracking-wider border border-gray-600 rounded hover:border-synthesis-neon text-gray-300 transition-colors" data-target="architecture-tab">3. Page Tree</button>
+        <button onclick="switchTab('modules-tab')" class="tab-btn px-6 py-3 font-tech text-lg uppercase tracking-wider border border-gray-600 rounded hover:border-synthesis-neon text-gray-300 transition-colors" data-target="modules-tab">4. UI Modules</button>
+    </nav>
+
+    <main>
+        
+        <section id="brand-tab" class="tab-content active">
+            <div class="mb-8">
+                <h2 class="font-heading text-4xl text-synthesis-neon mb-4">The Purple Synthesis Aesthetic</h2>
+                <p class="text-gray-300 text-lg max-w-4xl">
+                    Our digital presence reflects a civilisational upgrade. We blend sharp political insight with genuine community building. The aesthetic is technical, ecological, and presented with a warm, inviting energy. We design for resilient communities, pairing high-minded architecture with grounded pragmatism.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="crystalline-bg p-6 rounded glow-border">
+                    <h3 class="font-tech text-2xl text-white mb-4 border-b border-gray-700 pb-2">Typography Hierarchy</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-heading text-3xl text-synthesis-neon uppercase">Teko (Headings)</p>
+                            <p class="text-sm text-gray-400">Primary display font. Bold, structural, used exclusively in uppercase for main titles and taglines.</p>
+                        </div>
+                        <div>
+                            <p class="font-tech text-xl text-solarpunk-green uppercase">Rajdhani (Subtitles)</p>
+                            <p class="text-sm text-gray-400">Secondary font providing a technical edge. Used for section headers, data points, and UI labels.</p>
+                        </div>
+                        <div>
+                            <p class="font-sans text-base text-gray-200">Inter (Body Text)</p>
+                            <p class="text-sm text-gray-400">Clean, accessible readability for policy documents, long-form copy, and general communication.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="crystalline-bg p-6 rounded glow-border">
+                    <h3 class="font-tech text-2xl text-white mb-4 border-b border-gray-700 pb-2">Visual Motifs</h3>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex items-start">
+                            <span class="text-synthesis-neon mr-3 text-xl">⬢</span>
+                            <span><strong>The Infinity Loop:</strong> Intertwined strands merging into purple, representing the synthesis of policy.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-solarpunk-green mr-3 text-xl">✦</span>
+                            <span><strong>Solarpunk Integration:</strong> Lush, regenerative natural elements with clean technology. Explicitly excluding wind turbines.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-amethyst-light mr-3 text-xl">♦</span>
+                            <span><strong>Crystalline Structures:</strong> Amethyst and quartz elements representing Silica Citadels and data resilience.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="crystalline-bg p-6 rounded glow-border flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-tech text-2xl text-white mb-4 border-b border-gray-700 pb-2">Target Demographics</h3>
+                        <p class="text-sm text-gray-400 mb-4">Visual distribution of our core messaging audiences to guide imagery selection.</p>
+                        <div class="chart-container h-48">
+                            <canvas id="demographicChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline-tab" class="tab-content">
+            <div class="mb-8">
+                <h2 class="font-heading text-4xl text-synthesis-neon mb-4">Phasing Strategy & Policy Rollout</h2>
+                <p class="text-gray-300 text-lg max-w-4xl">
+                    The UI needs to contextualise our policy timeline. We are not promising everything at once. We build momentum with light, urgent policies, transitioning into major structural goals post-election, and reserving deep-future concepts for appropriate technological milestones.
+                </p>
+            </div>
+
+            <div class="space-y-6 mb-12">
+                
+                <div class="crystalline-bg p-6 rounded glow-border border-l-4 border-l-solarpunk-green relative overflow-hidden group cursor-pointer" onclick="toggleDetails('phase1')">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-heading text-3xl text-white uppercase tracking-wide">Phase 1: Momentum & Trial <span class="text-solarpunk-green ml-2">(Pre-2028 & Election)</span></h3>
+                        <span class="text-2xl text-gray-500 group-hover:text-white transition-colors">▼</span>
+                    </div>
+                    <p class="font-tech text-xl text-gray-400 mb-2">Easy, light, urgent policies to register the party and secure early representation.</p>
+                    <div id="phase1" class="hidden mt-4 pt-4 border-t border-gray-700 space-y-2 text-gray-300">
+                        <p>✦ <strong>Braided Economy Trials:</strong> Minor trials of the Community-Hour (C-Hour) in targeted local regions.</p>
+                        <p>✦ <strong>Cost of Living Common Sense:</strong> Relatable economic messaging, addressing toll roads and infrastructure fairness.</p>
+                        <p>✦ <strong>National AI Civic Surge Initiation:</strong> Building the initial voluntary framework for civic participation.</p>
+                        <p>✦ <strong>UI Requirement:</strong> Focus the homepage heavily on these immediate, relatable goals. Use playful pragmatism to onboard voters.</p>
+                    </div>
+                </div>
+
+                <div class="crystalline-bg p-6 rounded glow-border border-l-4 border-l-synthesis-neon relative overflow-hidden group cursor-pointer" onclick="toggleDetails('phase2')">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-heading text-3xl text-white uppercase tracking-wide">Phase 2: The Structural Surge <span class="text-synthesis-neon ml-2">(2028 - 2031 Parliament)</span></h3>
+                        <span class="text-2xl text-gray-500 group-hover:text-white transition-colors">▼</span>
+                    </div>
+                    <p class="font-tech text-xl text-gray-400 mb-2">Executing major goals from savings generated by the Health and AI surges.</p>
+                    <div id="phase2" class="hidden mt-4 pt-4 border-t border-gray-700 space-y-2 text-gray-300">
+                        <p>⬢ <strong>Oceania Health Surge:</strong> Deployment of preventative health architecture and biochemical excavation.</p>
+                        <p>⬢ <strong>ISS Orbital Gambit (2030):</strong> Coordinated effort leading up to the 2030 ISS de-orbiting schedule to establish a sovereign hub.</p>
+                        <p>⬢ <strong>Sovereign Compute Integration:</strong> Expanding edge node networks and data resilience frameworks.</p>
+                        <p>⬢ <strong>UI Requirement:</strong> Provide deep-dive interactive policy documents (Spec-Driven Architecture) accessible via the main navigation.</p>
+                    </div>
+                </div>
+
+                <div class="crystalline-bg p-6 rounded glow-border border-l-4 border-l-amethyst-light relative overflow-hidden group cursor-pointer" onclick="toggleDetails('phase3')">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-heading text-3xl text-white uppercase tracking-wide">Phase 3: Civilisational Stretch <span class="text-amethyst-light ml-2">(Post 2031 & Beyond)</span></h3>
+                        <span class="text-2xl text-gray-500 group-hover:text-white transition-colors">▼</span>
+                    </div>
+                    <p class="font-tech text-xl text-gray-400 mb-2">Long-term integration of planetary and orbital infrastructure.</p>
+                    <div id="phase3" class="hidden mt-4 pt-4 border-t border-gray-700 space-y-2 text-gray-300">
+                        <p>♦ <strong>Silica Citadels:</strong> Advanced subterranean construction and material sovereignty.</p>
+                        <p>♦ <strong>Decentralised Space Infrastructure:</strong> Further expansion of Kardashev Type 1 transition capabilities.</p>
+                        <p>♦ <strong>Permanent 'Try Everything' Workforce:</strong> Evolving the post-2032 Olympic volunteer register into a permanent civic engagement mechanism.</p>
+                        <p>♦ <strong>UI Requirement:</strong> Present these as visionary 'Horizons' rather than immediate campaign promises. Frame as aspirational protopian goals.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture-tab" class="tab-content">
+            <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div class="max-w-3xl">
+                    <h2 class="font-heading text-4xl text-synthesis-neon mb-4">Website Page Tree Hierarchy</h2>
+                    <p class="text-gray-300 text-lg">
+                        The information architecture is designed to guide users from casual interest to active civic participation. It is built entirely outside legacy CMS platforms, prioritising speed, accessibility, and clean code.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+                
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-dark border-l-4 border-synthesis-neon p-4 rounded shadow-lg">
+                        <h4 class="font-tech text-xl text-white uppercase mb-1">0.0 Home / The Synthesis</h4>
+                        <p class="text-sm text-gray-400">Primary landing interface. High-impact manifesto, quick onboarding, and current Civic Surge status.</p>
+                    </div>
+                    <div class="pl-6 border-l-2 border-gray-700 space-y-3">
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">0.1 The Protopian Vision</p>
+                            <p class="text-xs text-gray-500">Video/Text block outlining "Less Splash, More Class."</p>
+                        </div>
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">0.2 Current Surge Widget</p>
+                            <p class="text-xs text-gray-500">Live data showing current voluntary civic action.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-dark border-l-4 border-solarpunk-green p-4 rounded shadow-lg">
+                        <h4 class="font-tech text-xl text-white uppercase mb-1">1.0 The Blueprint (Policies)</h4>
+                        <p class="text-sm text-gray-400">Categorised policy library. Filterable by timeline (Phase 1, 2, Stretch) and domain.</p>
+                    </div>
+                    <div class="pl-6 border-l-2 border-gray-700 space-y-3">
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">1.1 Everyday Economics</p>
+                            <p class="text-xs text-gray-500">Cost of living, Tolls, The Braided Economy trials.</p>
+                        </div>
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">1.2 Sovereign Tech & Space</p>
+                            <p class="text-xs text-gray-500">Compute clusters, AI governance, 2030 ISS Gambit.</p>
+                        </div>
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">1.3 Health & Resilience</p>
+                            <p class="text-xs text-gray-500">Digital Twins, Health Surge, Silica Citadels.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-slate-dark border-l-4 border-amethyst-light p-4 rounded shadow-lg">
+                        <h4 class="font-tech text-xl text-white uppercase mb-1">2.0 Action Center</h4>
+                        <p class="text-sm text-gray-400">Mechanisms for intelligent participation. Event schedules, toolkits, and representative tracking.</p>
+                    </div>
+                    <div class="pl-6 border-l-2 border-gray-700 space-y-3">
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">2.1 Civic Surge Calendar</p>
+                            <p class="text-xs text-gray-500">Interactive dates for major/minor surges.</p>
+                        </div>
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">2.2 The Toolkit</p>
+                            <p class="text-xs text-gray-500">Brand kit, shareables, policy matrices for supporters.</p>
+                        </div>
+                        <div class="bg-deep-canvas border border-gray-700 p-3 rounded">
+                            <p class="font-tech text-solarpunk-green uppercase">2.3 2028 Cohort Register</p>
+                            <p class="text-xs text-gray-500">Tracking candidates and early elected representatives.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="modules-tab" class="tab-content">
+            <div class="mb-8">
+                <h2 class="font-heading text-4xl text-synthesis-neon mb-4">Core UI Modules & Components</h2>
+                <p class="text-gray-300 text-lg max-w-4xl">
+                    Standardised content blocks designed for the development team to construct the interface. These modules ensure consistency in our "Joyful, Responsible, Abundance" aesthetic.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                
+                <div class="crystalline-bg p-6 rounded glow-border">
+                    <h3 class="font-tech text-2xl text-amethyst-light mb-4">Module A: The Surge Activity Tracker</h3>
+                    <p class="text-sm text-gray-400 mb-6">A vital component for the homepage and Action Center. Visualises the voluntary Civic Surge calendar, highlighting major focal points (Elections, March Budget prep) and minor engagements.</p>
+                    
+                    <div class="chart-container bg-deep-canvas p-4 rounded border border-gray-700">
+                        <canvas id="surgeChart"></canvas>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-slate-dark rounded text-xs text-gray-400">
+                        <strong>Developer Note:</strong> Surges are voluntary. Major surges are heavily incentivised to influence federal budgets. Minor surges offer flexible participation (weekends/holidays).
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="crystalline-bg p-6 rounded glow-border border-t-4 border-t-solarpunk-green">
+                        <h3 class="font-tech text-2xl text-solarpunk-green mb-2">Module B: Policy Feature Card</h3>
+                        <p class="text-sm text-gray-400 mb-4">Used on the Blueprint page to surface individual policies quickly.</p>
+                        <div class="bg-deep-canvas p-5 rounded border border-gray-700 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-solarpunk-green text-deep-canvas font-tech px-2 py-1 text-xs uppercase font-bold">Phase 1</div>
+                            <h4 class="font-heading text-2xl text-white mb-2 tracking-wide uppercase">The C-Hour Ledger</h4>
+                            <p class="font-sans text-sm text-gray-300 mb-4">Monetising the foundational economy through simple recognition of community hours.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">Category: Everyday Economics</span>
+                                <button class="text-synthesis-neon font-tech text-sm uppercase hover:text-white transition-colors">Explore Detail →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="crystalline-bg p-6 rounded glow-border border-t-4 border-t-synthesis-neon">
+                        <h3 class="font-tech text-2xl text-synthesis-neon mb-2">Module C: The Data Dashboard Panel</h3>
+                        <p class="text-sm text-gray-400 mb-4">Used to present complex analysis (like the Spec-Driven AI Governance) in digestible formats.</p>
+                        <div class="bg-deep-canvas p-4 rounded border border-gray-700">
+                            <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
+                                <span class="font-tech uppercase text-gray-300">Governance Metric</span>
+                                <span class="font-mono text-synthesis-neon">Active</span>
+                            </div>
+                            <div class="flex items-end gap-4">
+                                <div class="text-4xl font-heading text-white">84<span class="text-xl text-gray-500">%</span></div>
+                                <div class="text-sm text-gray-400 pb-1">Community Consensus Model via Mixture of Experts (MoE) routing.</div>
+                            </div>
+                            <div class="w-full bg-gray-800 h-1 mt-3 rounded overflow-hidden">
+                                <div class="bg-synthesis-neon h-full w-[84%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-16 pt-8 border-t border-gray-800 text-center text-gray-500 font-tech text-sm tracking-widest uppercase">
+        <p>P4A Digital Architecture ✦ Internal Reference Document ✦ 2026</p>
+    </footer>
+
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('bg-synthesis-neon/20', 'text-white', 'border-transparent');
+            btn.classList.add('border-gray-600', 'text-gray-300');
+        });
+        
+        document.getElementById(tabId).classList.add('active');
+        
+        const activeBtn = document.querySelector(`button[data-target="${tabId}"]`);
+        activeBtn.classList.remove('border-gray-600', 'text-gray-300');
+        activeBtn.classList.add('bg-synthesis-neon/20', 'text-white', 'border-transparent');
+    }
+
+    function toggleDetails(id) {
+        const el = document.getElementById(id);
+        if (el.classList.contains('hidden')) {
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const demographicCtx = document.getElementById('demographicChart').getContext('2d');
+        new Chart(demographicCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Youth (Try-Everything)', 'Working Adults', 'Regional/Rural', 'Older Australians'],
+                datasets: [{
+                    data: [30, 40, 15, 15],
+                    backgroundColor: [
+                        '#B533FF',
+                        '#10B981',
+                        '#D8B4FE',
+                        '#4F46E5' 
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#e5e7eb',
+                            font: {
+                                family: "'Rajdhani', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '% Focus';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        const surgeCtx = document.getElementById('surgeChart').getContext('2d');
+        new Chart(surgeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Major Surge (Elections/Budget Prep)',
+                        data: [0, 0, 100, 0, 0, 0, 0, 0, 100, 100, 0, 0], 
+                        backgroundColor: '#B533FF',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Minor Surge (Optional/Holidays)',
+                        data: [40, 40, 0, 40, 40, 40, 40, 40, 0, 0, 40, 40],
+                        backgroundColor: '#10B981',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { display: false, color: '#374151' },
+                        ticks: { color: '#9ca3af', font: { family: "'Rajdhani', sans-serif" } }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { color: '#374151' },
+                        ticks: { display: false },
+                        border: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#e5e7eb',
+                            font: { family: "'Rajdhani', sans-serif" }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label + ' Engagement';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
